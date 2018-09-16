@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <% include ../partials/head %>
+<body>
+    <% include ../partials/header %>
+
+    <div class="container">
+        <div class="row">
+            <% blogs.forEach(function(blog){ %>
+                <div class="col-sm-6 col-md-4">
+                   <div class="thumbnail">
+                        <a href="/blogs/<%= blog.slug%>">
+                        <div class="caption">
+                            <h3><%= blog.title %></h3>
+                            <p> Description: <%= blog.description %> </p>
+                            <p> Author: <%= blog.author %> </p>
+                        </div>
+                        </a>
+                   </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+    <% include ../partials/footer %>    
+</body>
+</html>
