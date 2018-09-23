@@ -26,8 +26,16 @@ router.get('/register', function(req, res, next){
   AuthController.register(req, res, next);
 });
 
+router.get('/login', function(req, res, next){
+  AuthController.login(req, res, next);
+});
+
 router.post('/post-register', function(req, res, next){
   AuthController.postRegister(req, res, next);
-})
+});
+
+router.post('/post-login', function(req, res, next){
+  AuthController.postLogin(req, res, next);
+});
 
 module.exports = router;

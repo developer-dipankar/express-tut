@@ -4,11 +4,14 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
+var flash = require('connect-flash');
+var session = require('express-session');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var blogsRouter = require('./routes/blogs');
 var apiRouter   = require('./routes/api');
+
 var app = express();
 
 // MongoDB Connection
@@ -30,7 +33,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({ 
+  secret: 'keyboard cat', 
+  cookie: { maxAge: 60000 },
+  resave: false,
+  saveUninitialized: true,
+}));
+app.use(flash());
+
 app.use(function(req, res, next){
+  res.locals.messages = req.flash();
   console.log('Welcome to Express Tutorial');
   next();
 })
