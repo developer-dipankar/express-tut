@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var BlogController = require('../controller/BlogController');
+const AuthController = require('../controller/AuthController');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -16,8 +17,17 @@ router.get('/blog-list', function(req, res, next){
   BlogController.blogList(req, res, next);
 });
 
+
 router.get('/mongo-blogs', function(req, res, next){
   BlogController.mongoBlogPage(req, res, next);
+});
+
+router.get('/register', function(req, res, next){
+  AuthController.register(req, res, next);
+});
+
+router.post('/post-register', function(req, res, next){
+  AuthController.postRegister(req, res, next);
 })
 
 module.exports = router;
