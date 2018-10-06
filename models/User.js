@@ -16,6 +16,10 @@ var UserSchema = new Schema({
         type: String,
         required: [true, 'Password is required'],
     },
+    type: {
+        type: String,
+        required: [true, 'User type is required']
+    },
     token: {
         type: String,
     },

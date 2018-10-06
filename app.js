@@ -6,6 +6,11 @@ var logger = require('morgan');
 var mongoose = require('mongoose');
 var flash = require('connect-flash');
 var session = require('express-session');
+const passport = require('passport');
+var fs = require('fs')
+  , Log = require('log')
+  , log = new Log('debug', fs.createWriteStream('storage/logs/express.log'));
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -13,10 +18,14 @@ var blogsRouter = require('./routes/blogs');
 var apiRouter   = require('./routes/api');
 
 var app = express();
+app.locals.env = require('./config/env.json');
 
+require('./config/passport');
+app.use(passport.initialize());
+app.use(passport.session());
 // MongoDB Connection
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/expressTut', { useNewUrlParser: true });
+mongoose.connect(app.locals.env.MONGO_URL, { useNewUrlParser: true });
 mongoose.set('useCreateIndex', true);
 mongoose.connection.once('open', ()=> console.log('MongoDB Connected'))
                     .on('error', (err)=> {
@@ -43,6 +52,7 @@ app.use(flash());
 
 app.use(function(req, res, next){
   res.locals.messages = req.flash();
+  console.log(app.locals.env.APP_URL);
   console.log('Welcome to Express Tutorial');
   next();
 })
