@@ -13,6 +13,14 @@
                         <p><%= JSON.stringify(messages.validation_error) %></p>
                     <% } %>
 
+                    <% if(messages.success){ %>
+                        <p><%= JSON.stringify(messages.success) %></p>
+                    <% } %>
+
+                    <% if(messages.error){ %>
+                        <p><%= JSON.stringify(messages.error) %></p>
+                    <% } %>
+                    
                     <div class="panel-heading">
                         Registration
                     </div>
@@ -39,6 +47,7 @@
                                     </div>
                                 </div>
                             </form>
+                            <a href="/auth/facebook">Login with Facebook</a>
                         </div>
                     </div>
                 </div>

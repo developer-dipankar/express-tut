@@ -1,25 +1,29 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const FacebookStrategy = require('passport-facebook').Strategy;
+var express = require('express');
+var app = express();
+// const env = require('./env.json');
 
 const bcrypt = require('bcrypt');
 
-const Users = require('../models/User');
+const User = require('../models/User');
+app.use(passport.initialize());
+app.use(passport.session());
 
 passport.use(new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password',
 }, (email, password, done) => {
-  Users.findOne({email})
+  User.findOne({email})
     .then((user) => {
       if(!user) {
         return done('Invalid email id', false);
       }
-      if(!bcrypt.compareSync(password, user.password)){
+      if(!user.validatePassword(password)){
         return done('Incorrect Password', false);
       }
-
-      return done('Login Successfully', user);
+      return done(null, user);
     }).catch(done);
 }));
 passport.serializeUser(function(user, done) {
@@ -30,15 +34,38 @@ passport.deserializeUser(function(user, done) {
 });
 
 passport.use(new FacebookStrategy({
-  clientID: '1939053793043063',
-  clientSecret: 'bf25ad9e08f883c6b55bd927da5f6e88',
-  callbackURL: "http://localhost:3000/auth/facebook/callback"
-},
-function(accessToken, refreshToken, profile, done) {
-  // User.findOrCreate(..., function(err, user) {
-  //   if (err) { return done(err); }
-  //   done(null, user);
-  // });
-  console.log(accessToken, refreshToken, profile);
+  clientID: env.facebook_auth.clientID,
+  clientSecret: env.facebook_auth.clientSecret,
+  callbackURL: env.facebook_auth.callbackURL,
+  profileFields: ['id', 'emails', 'name']
+}, (accessToken, refreshToken, profile, done) => {
+  console.log('profile', profile);
+  User.findOne({email: profile.emails[0].value}, function(err, user) {
+    if(err){
+      console.log('err', err);
+      return done(err);
+    }
+    if(!user){
+        var user = new User;
+        user.name = profile.name.givenName+' '+profile.name.familyName;
+        user.email = profile.emails[0].value;
+        user.password = '123456';
+        user.type = 'client';
+        var error = user.validateSync();
+        
+        if(error){
+          console.log('validation error', error);
+          return done(error);
+        } else {
+          user.save(function(err) {
+            if (err) console.log(err);
+            return done(err, user);
+          });
+        }
+    } else {
+        console.log(err, user);
+        return done(err, user);
+    }
+  });
 }
 ));

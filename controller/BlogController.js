@@ -6,6 +6,7 @@ exports.blogDetails = function(req, res, next){
 
 exports.blogList = function(req, res, next) {
     var blogs = Blogs.blogs();
+    log.info(blogs);
     res.render('blogs/blogs_list', {
         blogs: blogs
     })

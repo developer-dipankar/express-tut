@@ -3,13 +3,13 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var mongoose = require('mongoose');
 var flash = require('connect-flash');
 var session = require('express-session');
-const passport = require('passport');
-var fs = require('fs')
-  , Log = require('log')
-  , log = new Log('debug', fs.createWriteStream('storage/logs/express.log'));
+env = require('./config/env.json');
+
+require('./config/db');
+require('./config/passport');
+require('./config/log');
 
 
 var indexRouter = require('./routes/index');
@@ -18,19 +18,6 @@ var blogsRouter = require('./routes/blogs');
 var apiRouter   = require('./routes/api');
 
 var app = express();
-app.locals.env = require('./config/env.json');
-
-require('./config/passport');
-app.use(passport.initialize());
-app.use(passport.session());
-// MongoDB Connection
-mongoose.Promise = global.Promise;
-mongoose.connect(app.locals.env.MONGO_URL, { useNewUrlParser: true });
-mongoose.set('useCreateIndex', true);
-mongoose.connection.once('open', ()=> console.log('MongoDB Connected'))
-                    .on('error', (err)=> {
-                      console.log('MongoDB Connection Failed');
-                    });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -52,7 +39,7 @@ app.use(flash());
 
 app.use(function(req, res, next){
   res.locals.messages = req.flash();
-  console.log(app.locals.env.APP_URL);
+  console.log(env.APP_URL);
   console.log('Welcome to Express Tutorial');
   next();
 })

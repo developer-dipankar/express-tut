@@ -1,7 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
-const bcrypt = require('bcrypt');
 
 const AuthController = function() {};
 
@@ -11,13 +10,10 @@ AuthController.prototype = {
     },
 
     postRegister: function(req, res, next) {
-        const saltRounds = 10;
-        var hash = bcrypt.hashSync(req.body.password, saltRounds);
-        // console.log(hash);
         var user = new User;
         user.name = req.body.username;
         user.email = req.body.email;
-        user.password = hash;
+        user.setPassword(req.body.password);
         user.type = 'client';
         var error = user.validateSync();
         
@@ -39,8 +35,13 @@ AuthController.prototype = {
     },
 
     postLogin: function(req, res, next) {
-        passport.authenticate('local', {session: true}, (err, user, info) => {
-            if (err || !user) {
+        passport.authenticate('local', {
+            session: true,
+            successRedirect: '/users/dashboard',
+            failuresRedirect: '/login'
+        }, (err, user, info) => {
+            console.log('user-->', user)
+            if (err) {
                 return res.status(400).json({
                     err    : err
                 });
@@ -50,14 +51,31 @@ AuthController.prototype = {
                     res.send(err);
                 }
                 // generate a signed son web token with the contents of user object and return it in the response
-                const token = jwt.sign(user.toJSON(), req.app.locals.env.jwt_token);
+                const token = jwt.sign(user.toJSON(), env.jwt_token);
                 return res.json({user, token});
             });
         })(req, res);
     },
 
     facebookLogin: function(req, res, next){
-        passport.authenticate('facebook');
+        passport.authenticate('facebook', { 
+            // scope : ['email', 'id'],
+            successRedirect: '/users/dashboard',
+            failuresRedirect: '/login',
+            session: true
+        }, (err, user, info)=> {
+            console.log({err: err});
+            console.log('user', user);
+        })(req, res);
+    }, 
+
+    fn1: function(req, res, next){
+        console.log('function 1');
+        next();
+    },
+
+    fn2: function(req, res, next){
+        console.log('function 2');
     }
 }
 
