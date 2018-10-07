@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 // MongoDB Connection
 mongoose.Promise = global.Promise;
 mongoose.connect(env.MONGO_URL, { useNewUrlParser: true });

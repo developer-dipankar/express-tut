@@ -17,6 +17,7 @@ passport.use(new LocalStrategy({
 }, (email, password, done) => {
   User.findOne({email})
     .then((user) => {
+      log.info(user);
       if(!user) {
         return done('Invalid email id', false);
       }

@@ -6,7 +6,7 @@ var logger = require('morgan');
 var flash = require('connect-flash');
 var session = require('express-session');
 env = require('./config/env.json');
-
+mongoose = require('mongoose');
 require('./config/db');
 require('./config/passport');
 require('./config/log');
